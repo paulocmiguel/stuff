@@ -1,107 +1,71 @@
-def print_board(board):
+#-------------------------------------------------------------------------------
+# Name:        module1
+# Purpose:
+#
+# Author:      Paulo César
+#
+# Created:     07/01/2018
+# Copyright:   (c) Paulo César 2018
+# Licence:     <your licence>
+#-------------------------------------------------------------------------------
+"""tictactoe game for 2 players
+from blogpost: http://thebillington.co.uk/blog/posts/writing-a-tic-tac-toe-game-in-python by  BILLY REBECCHI,
+slightly improved by Horst JENS"""
+from __future__ import print_function
 
-	print "The board look like this: \n"
+choices = []
 
-	for i in range(3):
-		print " ",
-		for j in range(3):
-			if board[i*3+j] == 1:
-				print 'X',
-			elif board[i*3+j] == 0:
-				print 'O',	
-			elif board[i*3+j] != -1:
-				print board[i*3+j]-1,
-			else:
-				print ' ',
-			
-			if j != 2:
-				print " | ",
-		print
-		
-		if i != 2:
-			print "-----------------"
-		else: 
-			print 
-			
-def print_instruction():
-	print "Please use the following cell numbers to make your move"
-	print_board([2,3,4,5,6,7,8,9,10])
+for x in range (0, 9) :
+    choices.append(str(x + 1))
 
+playerOneTurn = True
+winner = False
 
-def get_input(turn):
+def printBoard() :
+    print( '\n -----')
+    print( '|' + choices[0] + '|' + choices[1] + '|' + choices[2] + '|')
+    print( ' -----')
+    print( '|' + choices[3] + '|' + choices[4] + '|' + choices[5] + '|')
+    print( ' -----')
+    print( '|' + choices[6] + '|' + choices[7] + '|' + choices[8] + '|')
+    print( ' -----\n')
 
-	valid = False
-	while not valid:
-		try:
-			user = raw_input("Where would you like to place " + turn + " (1-9)? ")
-			user = int(user)
-			if user >= 1 and user <= 9:
-				return user-1
-			else:
-				print "That is not a valid move! Please try again.\n"
-				print_instruction()
-		except Exception as e:
-			print user + " is not a valid move! Please try again.\n"
-		
-def check_win(board):
-	win_cond = ((1,2,3),(4,5,6),(7,8,9),(1,4,7),(2,5,8),(3,6,9),(1,5,9),(3,5,7))
-	for each in win_cond:
-		try:
-			if board[each[0]-1] == board[each[1]-1] and board[each[1]-1] == board[each[2]-1]:
-				return board[each[0]-1]
-		except:
-			pass
-	return -1
+while not winner :
+    printBoard()
 
-def quit_game(board,msg):
-	print_board(board)
-	print msg
-	quit()
+    if playerOneTurn :
+        print( "Player 1:")
+    else :
+        print( "Player 2:")
 
-def main():
-	
-	# setup game
-	# alternate turns
-	# check if win or end
-	# quit and show the board
-	
-	print_instruction()
+    try:
+        choice = int(input(">> "))
+    except:
+        print("please enter a valid field")
+        continue
+    if choices[choice - 1] == 'X' or choices [choice-1] == 'O':
+        print("illegal move, plase try again")
+        continue
 
-	board = []
-	for i in range(9):
-		board.append(-1)
+    if playerOneTurn :
+        choices[choice - 1] = 'X'
+    else :
+        choices[choice - 1] = 'O'
 
-	win = False
-	move = 0
-	while not win:
+    playerOneTurn = not playerOneTurn
 
-		# print board
-		print_board(board)
-		print "Turn number " + str(move+1)
-		if move % 2 == 0:
-			turn = 'X'
-		else:
-			turn = 'O'
+    for x in range (0, 3) :
+        y = x * 3
+        if (choices[y] == choices[(y + 1)] and choices[y] == choices[(y + 2)]) :
+            winner = True
+            printBoard()
+        if (choices[x] == choices[(x + 3)] and choices[x] == choices[(x + 6)]) :
+            winner = True
+            printBoard()
 
-		# get user input
-		user = get_input(turn)
-		while board[user] != -1:
-			print "Invalid move! Cell already taken. Please try again.\n"
-			user = get_input(turn)
-		board[user] = 1 if turn == 'X' else 0
+    if((choices[0] == choices[4] and choices[0] == choices[8]) or
+       (choices[2] == choices[4] and choices[4] == choices[6])) :
+        winner = True
+        printBoard()
 
-		# advance move and check for end game
-		move += 1
-		if move > 4:
-			winner = check_win(board)
-			if winner != -1:
-				out = "The winner is " 
-				out += "X" if winner == 1 else "O" 
-				out += " :)"
-				quit_game(board,out)
-			elif move == 9:
-				quit_game(board,"No winner :(")
-
-if __name__ == "__main__":
-	main()
-	
+print ("Player " + str(int(playerOneTurn + 1)) + " wins!\n")
